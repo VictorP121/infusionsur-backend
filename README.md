@@ -46,14 +46,18 @@ npm install
 ```
 
 ## crear el archivo .env en la raiz
-*Crear archivo `.env`:
-poner lo siguiente (solo remplazar el donde dice: tu_uri_de_mongodb_atlas por la URL que nos provee MongoDB Atlas )
+* Crear un archivo llamado: `.env`:
+dentro del archivo `.env`, hay que añadir las siguientes lineas:
 
 PORT=3000
 MONGODB_URI=tu_uri_de_mongodb_atlas
 FRONTEND_URL=*
 
-Ejecucion en desarrollo (consola command prompt):
+
+## Comando para interactuar con la base de datos
+para ejecutar el siguiente comando, se debe abrir una terminal en visual studio
+(consola command prompt):
+
 ```bash
 npm run dev
 ```
