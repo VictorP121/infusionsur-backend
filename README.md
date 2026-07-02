@@ -15,7 +15,7 @@ empresa chilena de venta online de tés premium e infusiones naturales.
 https://infusionsur-backend.onrender.com
 
 ## Estructura del proyecto
-
+```bash
 src/
 ├── config/
 │   └── db.js
@@ -36,6 +36,7 @@ src/
 │   └── notFound.js
 ├── app.js
 └── server.js
+```
 
 ## Instalación local
 
@@ -46,13 +47,14 @@ npm install
 ```
 
 ## crear el archivo .env en la raiz
-* Crear un archivo llamado: `.env`:
+* Crear un archivo llamado: `.env` en la Raiz, luego
 dentro del archivo `.env`, hay que añadir las siguientes lineas:
 
+```bash
 PORT=3000
 MONGODB_URI=tu_uri_de_mongodb_atlas
 FRONTEND_URL=*
-
+```
 
 ## Comando para interactuar con la base de datos
 para ejecutar el siguiente comando, se debe abrir una terminal en visual studio
