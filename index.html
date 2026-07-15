@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InfusionSur - Panel de Gestión</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f4f4f9; }
+        h1, h2 { color: #333; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        form { margin-bottom: 30px; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        input, button { display: block; width: 100%; margin: 10px 0; padding: 8px; box-sizing: border-box; border-radius: 4px; }
+        button { background-color: #28a745; color: white; border: none; cursor: pointer; font-weight: bold; }
+        button:hover { background-color: #218838; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        th { background-color: #007bff; color: white; }
+        .refresh-btn { background-color: #007bff; margin-bottom: 10px; width: auto; display: inline-block; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🌱 Sistema de Gestión - InfusionSur</h1>
+    <hr>
+
+    <!-- FORMULARIO PARA AGREGAR CLIENTE -->
+    <h2>Agregar Nuevo Cliente</h2>
+    <form id="clienteForm">
+        <input type="text" id="nombre" placeholder="Nombre completo" required>
+        <input type="email" id="email" placeholder="Correo electrónico" required>
+        <input type="text" id="telefono" placeholder="Teléfono" required>
+        <button type="submit">Guardar Cliente</button>
+    </form>
+
+    <!-- TABLA PARA MOSTRAR LOS DATOS -->
+    <h2>Lista de Clientes Registrados</h2>
+    <button class="refresh-btn" onclick="obtenerClientes()">🔄 Actualizar Lista</button>
+    <table>
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Email</th>
+                <th>Teléfono</th>
+            </tr>
+        </thead>
+        <tbody id="tablaClientes">
+            <tr>
+                <td colspan="3" style="text-align: center;">Cargando clientes desde Render...</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<script>
+    // URL base de tu backend desplegado en Render
+    const BASE_URL = "https://infusionsur-backend.onrender.com/api";
+
+    // 1. FUNCIÓN PARA OBTENER LOS CLIENTES (GET)
+    async function obtenerClientes() {
+        try {
+            const respuesta = await fetch(`${BASE_URL}/clientes`);
+            if (!respuesta.ok) throw new Error("Error en la respuesta del servidor");
+           
+            const clientes = await respuesta.json();
+            const tabla = document.getElementById("tablaClientes");
+            tabla.innerHTML = ""; // Limpiar tabla
+
+            if (clientes.length === 0) {
+                tabla.innerHTML = `<tr><td colspan="3" style="text-align: center;">No hay clientes registrados.</td></tr>`;
+                return;
+            }
+
+            clientes.forEach(cliente => {
+                const fila = document.createElement("tr");
+                fila.innerHTML = `
+                    <td>${cliente.nombre}</td>
+                    <td>${cliente.email}</td>
+                    <td>${cliente.telefono || 'No registrado'}</td>
+                `;
+                tabla.appendChild(fila);
+            });
+        } catch (error) {
+            console.error("Error al traer datos:", error);
+            document.getElementById("tablaClientes").innerHTML =
+                `<tr><td colspan="3" style="text-align: center; color: red;">Error al conectar con Render: ${error.message}</td></tr>`;
+        }
+    }
+
+    // 2. FUNCIÓN PARA ENVIAR UN NUEVO CLIENTE (POST)
+    document.getElementById("clienteForm").addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const nuevoCliente = {
+            nombre: document.getElementById("nombre").value,
+            email: document.getElementById("email").value,
+            telefono: document.getElementById("telefono").value
+        };
+
+        try {
+            const respuesta = await fetch(`${BASE_URL}/clientes`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(nuevoCliente)
+            });
+
+            if (respuesta.ok) {
+                alert("¡Cliente agregado con éxito!");
+                document.getElementById("clienteForm").reset(); // Limpiar el formulario
+                obtenerClientes(); // Recargar la lista automáticamente
+            } else {
+                const errorData = await respuesta.json();
+                alert(`Error: ${errorData.message || 'No se pudo guardar'}`);
+            }
+        } catch (error) {
+            console.error("Error al guardar:", error);
+            alert("Error de red al intentar conectar con el backend.");
+        }
+    });
+
+    // Cargar automáticamente los datos al abrir la ventana
+    window.onload = obtenerClientes;
+</script>
+
+</body>
+</html>
